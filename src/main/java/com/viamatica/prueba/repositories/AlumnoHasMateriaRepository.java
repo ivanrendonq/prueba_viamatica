@@ -17,4 +17,6 @@ public interface AlumnoHasMateriaRepository extends JpaRepository<AlumnoHasMater
     List<AlumnoHasMaterias> findMateriasDeAlumno(@Param("alumnoId") Integer alumnoId);
 
     List<AlumnoHasMaterias> findByMateria(Materia materia);
+
+    
 }

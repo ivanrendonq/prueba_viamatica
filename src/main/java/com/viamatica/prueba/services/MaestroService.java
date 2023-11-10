@@ -1,5 +1,6 @@
 package com.viamatica.prueba.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.viamatica.prueba.entities.Alumno;
+import com.viamatica.prueba.entities.AlumnoHasMaterias;
 import com.viamatica.prueba.entities.EstadoEntidad;
 import com.viamatica.prueba.entities.Maestro;
 import com.viamatica.prueba.repositories.AlumnoRepository;
@@ -20,6 +22,9 @@ public class MaestroService {
 
     @Autowired
     AlumnoRepository alumnoRepository;
+
+    @Autowired
+    AlumnoService alumnoService;
 
 
     public boolean crearMaestro(Maestro Maestro)
@@ -112,9 +117,40 @@ public class MaestroService {
 
     public List<Alumno> getAlumnosMejoresPromedio(Integer id) {
         try {
-            List<Maestro> Maestros = maestroRepository.findAllActiveMaestros();
+            Optional<Maestro> maestro = maestroRepository.findById(id);
 
-            return Maestros;
+            if (maestro.isEmpty()) {
+                throw new Exception();
+            }
+
+            List<Alumno> alumnos = alumnoRepository.findByMaestro(maestro.get());
+            List<Alumno> alumnosConMejorPromedio = new ArrayList<>();
+
+            double puntajeMaximo = 0;
+            for (Alumno alumno : alumnos) 
+            {
+                List<AlumnoHasMaterias> materias = alumnoService.getMaterias(alumno.getIdAlumno());
+
+                for(AlumnoHasMaterias alumnoMateria : materias)
+                {
+                    if(alumnoMateria.getPuntaje() > puntajeMaximo)
+                    {
+                        puntajeMaximo = alumnoMateria.getPuntaje();
+                        alumnosConMejorPromedio.clear();
+                        if(alumnosConMejorPromedio.contains(alumno) == false)
+                        {
+                            alumnosConMejorPromedio.add(alumno);
+                        }
+                    }else if(alumnoMateria.getPuntaje() == puntajeMaximo){
+                        if(alumnosConMejorPromedio.contains(alumno) == false)
+                        {
+                            alumnosConMejorPromedio.add(alumno);
+                        }
+                    }
+                }
+            }
+
+            return alumnosConMejorPromedio;
 
         } catch (Exception e) {
             return null;

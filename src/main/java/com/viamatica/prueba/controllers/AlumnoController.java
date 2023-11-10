@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.viamatica.prueba.entities.Alumno;
 import com.viamatica.prueba.entities.AlumnoHasMaterias;
+import com.viamatica.prueba.entities.Materia;
 import com.viamatica.prueba.services.AlumnoService;
 
 
@@ -141,5 +142,23 @@ public class AlumnoController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+
+    @GetMapping("/materia-mayor-puntaje/{id}")
+    public ResponseEntity<Object> buscarMateriaConPuntajeMasAlto(@PathVariable Integer id) {
+        try {
+
+            Materia materia = alumnoService.buscarMateriaMayorPuntaje(id);
+
+            if(materia == null)
+                throw new Exception();
+                
+            return new ResponseEntity<>(materia, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

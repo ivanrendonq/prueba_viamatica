@@ -26,7 +26,6 @@ public class AlumnoService {
     @Autowired
     AlumnoHasMateriaRepository alumnoMateriaRepository;
 
-
     public boolean crearAlumno(Alumno alumno) {
         try {
             alumnoRepository.save(alumno);
@@ -114,30 +113,75 @@ public class AlumnoService {
         }
     }
 
+    public List<AlumnoHasMaterias> getMaterias(Integer idAlumno) {
+        try {
+            Optional<Alumno> alumno = alumnoRepository.findById(idAlumno);
+
+            if (alumno.isEmpty())
+                throw new Exception();
+
+            List<AlumnoHasMaterias> materias = alumnoMateriaRepository.findMateriasDeAlumno(alumno.get().getIdAlumno());
+
+            if (materias == null)
+                throw new Exception();
+
+            return materias;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public boolean agregarMateria(AlumnoHasMaterias alumnoMateria) {
         try {
-            //Comprobar si existe alumno
+            // Comprobar si existe alumno
             Optional<Alumno> alumno = alumnoRepository.findById(alumnoMateria.getAlumno().getIdAlumno());
 
             if (alumno.isEmpty())
                 throw new Exception();
-            
-            //Comprobar si existe la materia
+
+            // Comprobar si existe la materia
             Optional<Materia> materia = materiaRepository.findById(alumnoMateria.getMateria().getIdMateria());
 
-            if(materia.isEmpty())
+            if (materia.isEmpty())
                 throw new Exception();
 
-            
-            //Guardar 
+            // Guardar
             alumnoMateriaRepository.save(alumnoMateria);
-
 
             return true;
 
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public Materia buscarMateriaMayorPuntaje(Integer id) {
+        try {
+            // Comprobar si existe alumno
+            Optional<Alumno> alumno = alumnoRepository.findById(id);
+
+            if (alumno.isEmpty())
+                throw new Exception();
+
+            List<AlumnoHasMaterias> alumnoMaterias = alumnoMateriaRepository.findMateriasDeAlumno(id);
+
+            Double puntajeMaximo = 0d;
+
+            Materia materiaMayorPuntaje = null;
+            for (AlumnoHasMaterias alumnoHasMaterias : alumnoMaterias) {
+                if(alumnoHasMaterias.getPuntaje() > puntajeMaximo)
+                {
+                    puntajeMaximo = alumnoHasMaterias.getPuntaje();
+                    materiaMayorPuntaje = alumnoHasMaterias.getMateria();
+                }
+            }
+            return materiaMayorPuntaje;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

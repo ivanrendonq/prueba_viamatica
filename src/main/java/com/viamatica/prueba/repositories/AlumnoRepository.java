@@ -2,6 +2,7 @@ package com.viamatica.prueba.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.viamatica.prueba.entities.Alumno;
@@ -24,5 +25,4 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Integer> {
     List<Alumno> findByNombreContainingIgnoreCase(String nombre);
 
     
-
 }
